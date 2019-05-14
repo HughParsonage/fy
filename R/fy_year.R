@@ -1,6 +1,6 @@
 #' Convenience functions for dealing with financial years
 #'
-#' @name is.fy
+#' @name is_fy
 #' @aliases fy.year yr2fy fy2yr fy2date date2fy
 #' @param yr_ending An integer representing a year.
 #' @param fy.yr A string suspected to be a financial year.
@@ -10,7 +10,7 @@
 #' @details The following forms are permitted: \code{2012-13}, \code{201213}, \code{2012 13}, only.
 #' However, the \code{2012-13} form is preferred and will improve performance.
 #'
-#' @return For \code{is.fy}, a logical, whether its argument is a financial year.
+#' @return For \code{is_fy}, a logical, whether its argument is a financial year.
 #' The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, only.
 #' For \code{fy.year}, \code{yr2fy}, and \code{date2fy}, the financial year.
 #' For the inverses, a numeric corresponding to the year.
@@ -25,21 +25,19 @@
 #'
 #'
 #' @examples
-#' is.fy("2012-13")
-#' is.fy("2012-14")
+#' is_fy("2012-13")
+#' is_fy("2012-14")
 #' yr2fy(2012)
 #' fy2yr("2015-16")
 #' date2fy("2014-08-09")
-#' @export is.fy yr2fy fy2yr fy2date date2fy
+#' @export is_fy yr2fy fy2yr fy2date date2fy
 NULL
 
-
-
-is.fy <- function(fy.yr){
-  out <- logical(length(fy.yr))
-  potential_fys <- grepl("^([12][0-9]{3})[-\\s]?[0-9]{2}$", fy.yr, perl = TRUE)
+is_fy <- function(x) {
+  out <- logical(length(x))
+  potential_fys <- grepl("^([12][0-9]{3})[-\\s]?[0-9]{2}$", x, perl = TRUE)
   out[potential_fys] <-
-    {as.integer(sub("^([12][0-9]{3})[-\\s]?[0-9]{2}$", "\\1", fy.yr[potential_fys], perl = TRUE)) + 1L} %% 100L == as.integer(sub("^[12][0-9]{3}[-\\s]?([0-9]{2})$", "\\1", fy.yr[potential_fys], perl = TRUE))
+    {as.integer(sub("^([12][0-9]{3})[-\\s]?[0-9]{2}$", "\\1", x[potential_fys], perl = TRUE)) + 1L} %% 100L == as.integer(sub("^[12][0-9]{3}[-\\s]?([0-9]{2})$", "\\1", x[potential_fys], perl = TRUE))
   out
 }
 
@@ -127,8 +125,10 @@ range_fy2yr <- function(x) {
     return(c(g_min_yr, g_max_yr))
   }
   y <- fmatch(x, fys1901) + 1900L
+
   miny <- min(y, na.rm = TRUE)
   maxy <- max(y, na.rm = TRUE)
+
   setattr(x, "grattan_min_yr", miny)
   setattr(x, "grattan_max_yr", maxy)
   c(miny, maxy)
@@ -161,27 +161,28 @@ yr2fy <- function(yr_ending, assume1901_2100 = .getOption("fy.assume1901_2100", 
   }
 }
 
-fy2yr <- function(fy.yr){
-  if (!all(is.fy(fy.yr))){
+fy2yr <- function(x) {
+  if (!all(is_fy(x))) {
     stop("fy.yr contains non-FYs")
-  } else  {
-    1L + as.integer(gsub("^.*([12][0-9]{3}).?[0-9]{2}.*$", "\\1", fy.yr))
   }
+  1L + as.integer(gsub("^.*([12][0-9]{3}).?[0-9]{2}.*$", "\\1", x))
 }
 
 
 
-fy2date <- function(x){
-  if (!all(is.fy(x))){
+fy2date <- function(x) {
+  if (!all(is_fy(x))) {
     stop("fy.yr contains non-FYs")
-  } else {
-    date <- paste0(as.numeric(gsub("^([1-9][0-9]{3}).*", "\\1", x)) + 1, "-06-30")
-    as.Date(date)
   }
+  date <- paste0(as.numeric(gsub("^([1-9][0-9]{3}).*", "\\1", x)) + 1, "-06-30")
+  as.Date(date)
 }
 
 
-date2fy <- function(date){
+date2fy <- function(date) {
+  if (!inherits(date, "Date")) {
+    date <- as.Date(date)
+  }
   if_else(month(date) < 7L,
           yr2fy(year(date)),
           yr2fy(year(date) + 1L))

@@ -20,7 +20,7 @@ character vector of financial years.}
 If \code{NULL}, no restriction on the upper or lower bound of the range.}
 
 \item{deparsed}{A string indicating the argument that the user provided.
-Should generally be provided explicitly as the default is unlikely 
+Should generally be provided explicitly as the default is unlikely
 to be user-friendly.}
 
 \item{allow.projection}{If \code{FALSE} emit a different error message.}
@@ -40,8 +40,8 @@ already in that form, they obtain the following attributes:
 }
 }
 \description{
-Many functions expect financial years. 
-Determining that they are validly entered is often quite 
+Many functions expect financial years.
+Determining that they are validly entered is often quite
 computationally costly, relative to the core calculations.
 These internal functions provide mechanisms to check validity
 quickly, while still providing clear, accurate error messages.
