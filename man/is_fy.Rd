@@ -7,16 +7,37 @@
 \alias{fy2yr}
 \alias{fy2date}
 \alias{date2fy}
+\alias{.yr2fy}
+\alias{qtr2fy}
 \title{Convenience functions for dealing with financial years}
+\usage{
+yr2fy(yr_ending, assume1901_2100 = .getOption("fy.assume1901_2100",
+  .getOption("grattan.assume1901_2100", TRUE)))
+
+.yr2fy(yr_ending)
+
+fy2yr(x, na_error = TRUE)
+
+fy2date(x, na_error = TRUE)
+
+date2fy(date)
+
+qtr2fy(yq)
+}
 \arguments{
 \item{yr_ending}{An integer representing a year.}
 
-\item{fy.yr}{A string suspected to be a financial year.}
+\item{assume1901_2100}{For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
+for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.}
+
+\item{x, fy.yr}{A character vector suspected to be a financial year.}
+
+\item{na_error}{If an input expects a financial year and \code{na_error} is \code{TRUE}
+then the function exits with an error.}
 
 \item{date}{A string or date for which the financial year is desired. Note that \code{yr2fy} does not check its argument is an integer.}
 
-\item{assume1901_2100}{For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
-for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.}
+\item{yq}{A character vector representing year quarters in \code{1066-Q2} format.}
 }
 \value{
 For \code{is_fy}, a logical, whether its argument is a financial year.

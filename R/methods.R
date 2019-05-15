@@ -37,3 +37,24 @@
          length(x), "`.")
   }
 }
+
+#' @export
+range.fy <- function(...) {
+  if (.getOption("verbose", FALSE)) {
+    cat("Using range.fy method\n")
+  }
+  R <- range_fy2yr(..1)
+  yr2fy(R)
+}
+
+#' @export
+min.fy <- function(...) {
+  range.fy(...)[1]
+}
+
+#' @export
+max.fy <- function(...) {
+  range.fy(...)[2]
+}
+
+

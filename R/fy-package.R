@@ -4,6 +4,7 @@
 #' @importFrom fastmatch fmatch
 #' @importFrom fastmatch %fin%
 #' @importFrom hutils AND
+#' @importFrom hutils OR
 #' @importFrom hutils if_else
 #' @importFrom hutils %notin%
 

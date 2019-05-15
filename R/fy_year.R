@@ -3,8 +3,11 @@
 #' @name is_fy
 #' @aliases fy.year yr2fy fy2yr fy2date date2fy
 #' @param yr_ending An integer representing a year.
-#' @param fy.yr A string suspected to be a financial year.
+#' @param x,fy.yr A character vector suspected to be a financial year.
+#' @param yq A character vector representing year quarters in \code{1066-Q2} format.
 #' @param date A string or date for which the financial year is desired. Note that \code{yr2fy} does not check its argument is an integer.
+#' @param na_error If an input expects a financial year and \code{na_error} is \code{TRUE}
+#'   then the function exits with an error.
 #' @param assume1901_2100 For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
 #' for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.
 #' @details The following forms are permitted: \code{2012-13}, \code{201213}, \code{2012 13}, only.
@@ -30,7 +33,7 @@
 #' yr2fy(2012)
 #' fy2yr("2015-16")
 #' date2fy("2014-08-09")
-#' @export is_fy yr2fy fy2yr fy2date date2fy
+#' @export is_fy
 NULL
 
 is_fy <- function(x) {
@@ -124,13 +127,15 @@ range_fy2yr <- function(x) {
       !is.null(g_max_yr <- attr(x, "grattan_max_yr"))) {
     return(c(g_min_yr, g_max_yr))
   }
-  y <- fmatch(x, fys1901) + 1900L
+  y <- fmatch(x, fys1901)
 
-  miny <- min(y, na.rm = TRUE)
-  maxy <- max(y, na.rm = TRUE)
+  miny <- min(y, na.rm = TRUE) + 1900L
+  maxy <- max(y, na.rm = TRUE) + 1900L
 
-  setattr(x, "grattan_min_yr", miny)
-  setattr(x, "grattan_max_yr", maxy)
+  if (is.symbol(substitute(x))) {
+    setattr(x, "grattan_min_yr", miny)
+    setattr(x, "grattan_max_yr", maxy)
+  }
   c(miny, maxy)
 }
 
@@ -142,48 +147,108 @@ max_fy2yr <- function(x) {
   range_fy2yr(x)[2L]
 }
 
-yr2fy <- function(yr_ending, assume1901_2100 = .getOption("fy.assume1901_2100", TRUE)) {
-  if (assume1901_2100 ||
-      AND(min(yr_ending) > 1900L,
-          max(yr_ending) < 2100L)) {
-    fys1901[yr_ending - 1900L]
-  } else {
-    .yr2fy(yr_ending)
-  }
+#' @rdname is_fy
+#' @export yr2fy
+yr2fy <- function(yr_ending,
+                  assume1901_2100 = .getOption("fy.assume1901_2100",
+                                               .getOption("grattan.assume1901_2100",
+                                                          TRUE))) {
+  out <-
+    if (assume1901_2100 ||
+        AND(min(yr_ending) > 1900L,
+            max(yr_ending) < 2100L)) {
+      fys1901[yr_ending - 1900L]
+    } else {
+      .yr2fy(yr_ending)
+    }
+  class(out) <- "fy"
+  out
 }
 
+
+#' @rdname is_fy
+#' @export .yr2fy
 .yr2fy <- function(yr_ending) {
-  if (length(yr_ending) > 10e3L) {
-    # Apparently quicker for > 1000
-    accel_repetitive_input(yr_ending, .yr2fy)
-  } else {
-    sprintf("%d-%02d", as.integer(yr_ending) - 1L, as.integer(yr_ending) %% 100L)
-  }
+  out <-
+    if (length(yr_ending) > 10e3L) {
+      # Apparently quicker for > 1000
+      accel_repetitive_input(yr_ending, .yr2fy)
+    } else {
+      sprintf("%d-%02d", as.integer(yr_ending) - 1L, as.integer(yr_ending) %% 100L)
+    }
+  class(out) <- "fy"
+  out
 }
 
-fy2yr <- function(x) {
-  if (!all(is_fy(x))) {
-    stop("fy.yr contains non-FYs")
+#' @rdname is_fy
+#' @export fy2yr
+fy2yr <- function(x, na_error = TRUE) {
+  check_TF(na_error)
+  out <- 1900L + fmatch(x, fys1901)
+  if (na_error && anyNA(out)) {
+    if (!all(is_fy(x))) {
+      stop("fy.yr contains non-FYs.\n",
+           "First non-FY position: ", which.max(is.na(out)), ".")
+    }
+    out <- fy2yr(yr2fy(as.integer(substr(x, 0L, 4L)) + 1L))
   }
-  1L + as.integer(gsub("^.*([12][0-9]{3}).?[0-9]{2}.*$", "\\1", x))
+  out
 }
 
 
-
-fy2date <- function(x) {
-  if (!all(is_fy(x))) {
+#' @rdname is_fy
+#' @export fy2date
+fy2date <- function(x, na_error = TRUE) {
+  if (na_error && !all(is_fy(x))) {
     stop("fy.yr contains non-FYs")
   }
-  date <- paste0(as.numeric(gsub("^([1-9][0-9]{3}).*", "\\1", x)) + 1, "-06-30")
+  date <- paste0(as.integer(substr(x, 0L, 4L)) + 1L, "-06-30")
   as.Date(date)
 }
 
 
+#' @rdname is_fy
+#' @export date2fy
 date2fy <- function(date) {
   if (!inherits(date, "Date")) {
     date <- as.Date(date)
   }
-  if_else(month(date) < 7L,
-          yr2fy(year(date)),
-          yr2fy(year(date) + 1L))
+  out <- yr2fy(year(date) + {month(date) >= 7L})
+  class(out) <- "fy"
+  out
 }
+
+
+#' @rdname is_fy
+#' @export qtr2fy
+qtr2fy <- function(yq) {
+  if (inherits(yq, "yearqtr")) {
+    yqn <- as.numeric(yq)
+    o <-
+      yr2fy(if_else(yqn %% 1 >= 0.5,
+                    yqn + 1,
+                    yqn))
+    o
+  } else if (is.character(yq)) {
+    # Rely on the first element to determine the
+    # format
+    first_yq <- yq[1L]
+    if (is.na(first_yq)) {
+      yq_is_na <- is.na(yq)
+      first_yq <- first(yq[which.min(yq_is_na)])
+    }
+
+    y <- q <- NULL
+    cm <- CJ(y = 1901:2099, q = 1:4)
+    cm[, "YQ" := sprintf("%d%sQ%d", y, substr(first_yq, 5L, 5L), q)]
+    cm[, "fy_year" := yr2fy(y + q %in% 3:4)]
+    cmyq <- .subset2(cm, "YQ")
+    o <- .subset2(cm, "fy_year")[fmatch(yq, cmyq)]
+
+  } else {
+    stop("Unknown class for `yq`.")
+  }
+  class(o) <- "fy"
+  o
+}
+

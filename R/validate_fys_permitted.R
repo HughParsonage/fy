@@ -163,6 +163,8 @@ validate_fys_permitted <- function(to_verify, permitted_fys,
       }
       return(invisible(to_verify))
     }
+  } else {
+    permitted_fys <- validate_fys_permitted(permitted_fys)
   }
 
 
@@ -188,20 +190,27 @@ validate_fys_permitted <- function(to_verify, permitted_fys,
                 fy.year[i1], " at position ", i1, ".")
         }
       }
-    }
-    i <- which(fy.year %notin% permitted_fys)
-    i1 <- i[1]
-
-    if (length(i) == 1L) {
-      stopn("`", deparsed, " = ", fy.year[i1], "` was not within the allowed range: ",
-            permitted_fys[1], " <= fy.year <= ", last(permitted_fys))
     } else {
-      stopn("`", deparsed, "` were not within the allowed range: ",
-            permitted_fys[1], " <= fy.year <= ", last(permitted_fys), "\n\n",
-            "First invalid FY:\n\t", fy.year[i1], "\n",
-            "at position ", i1)
+      # all are valid
+      if (min.fy(fy.year) < min.fy(permitted_fys) ||
+          max.fy(fy.year) > max.fy(permitted_fys)) {
+
+        i <- which(fy.year %notin% permitted_fys)
+        i1 <- i[1]
+
+        if (length(i) == 1L) {
+          stopn("`", deparsed, " = ", fy.year[i1], "` was not within the allowed range: ",
+                permitted_fys[1], " <= fy.year <= ", last(permitted_fys))
+        } else {
+          stopn("`", deparsed, "` were not within the allowed range: ",
+                permitted_fys[1], " <= fy.year <= ", last(permitted_fys), "\n\n",
+                "First invalid FY:\n\t", fy.year[i1], "\n",
+                "at position ", i1)
+        }
+      }
     }
   }
+  class(to_verify) <- "fy"
   return(to_verify)
 }
 
