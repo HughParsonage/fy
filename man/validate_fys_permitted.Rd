@@ -4,7 +4,7 @@
 \alias{validate_fys_permitted}
 \title{Verifying validity of financial years}
 \usage{
-validate_fys_permitted(to_verify, permitted_fys, min.yr = NULL,
+validate_fys_permitted(to_verify, permitted_fys = NULL, min.yr = NULL,
   max.yr = NULL, deparsed = deparse(substitute(to_verify)),
   allow.projection = TRUE,
   earliest_permitted_financial_year = "earliest permitted financial year",
@@ -34,9 +34,9 @@ If \code{to_verify} contains valid financial years
 they are returned all in the form \code{2013-14}. If they were
 already in that form, they obtain the following attributes:
 \describe{
-\item{\code{grattan_all_fy}}{\code{TRUE} if all the financial years are valid.}
-\item{\code{grattan_min_yr}}{An integer, the earliest year ending in \code{to_verify}.}
-\item{\code{grattan_max_yr}}{An integer, the latest year ending in \code{to_verify}.}
+\item{\code{fy_all_fy}}{\code{TRUE} if all the financial years are valid.}
+\item{\code{fy_min_yr}}{An integer, the earliest year ending in \code{to_verify}.}
+\item{\code{fy_max_yr}}{An integer, the latest year ending in \code{to_verify}.}
 }
 }
 \description{

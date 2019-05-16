@@ -26,4 +26,5 @@ Suggests:
     testthat,
     withr,
     rlang,
-    zoo
+    zoo,
+    covr

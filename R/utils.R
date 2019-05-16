@@ -25,6 +25,9 @@ accel_repetitive_input <- function(x, FUN, ..., THRESHOLD = 1000L) {
 #' @return Error message but the calling handle at the 'user-level'
 stopn <- function(..., n = -sys.nframe()) {
   error_message <- paste0(..., collapse = "")
+  if (!interactive() || is_testing()) {
+    stop(error_message, call. = FALSE) # nocov
+  }
   condition <- function(subclass, message, call = sys.call(-1),
                         ...) {
     structure(class = c(subclass, "condition"),
@@ -32,16 +35,24 @@ stopn <- function(..., n = -sys.nframe()) {
                    call = call), ...)
   }
   custom_stop <- function(subclass,
-                          message = error_message,
+                          message,
                           call = sys.call(n - 1L),
                           ...) {
     ER <- condition(c("my_error", "error"),
-                    error_message,
+                    message,
                     call = call,
                     ...)
     stop(ER)
   }
-  custom_stop()
+  custom_stop(message = error_message)
 }
+
+# nocov start
+is_testing <- function() {
+  requireNamespace("testthat", quietly = TRUE) &&
+    testthat::is_testing()
+}
+
+# nocov end
 
 
