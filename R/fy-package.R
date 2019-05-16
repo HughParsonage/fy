@@ -7,6 +7,7 @@
 #' @importFrom hutils OR
 #' @importFrom hutils if_else
 #' @importFrom hutils %notin%
+#' @importFrom utils head
 
 #' @keywords internal
 "_PACKAGE"

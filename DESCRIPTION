@@ -21,7 +21,8 @@ Depends: R (>= 3.1.0)
 Imports: 
     fastmatch,
     data.table,
-    hutils
+    hutils,
+    utils
 Suggests: 
     testthat,
     withr,
