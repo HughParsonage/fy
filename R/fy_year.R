@@ -37,10 +37,15 @@
 NULL
 
 is_fy <- function(x) {
+  if (length(x) > 100e3L) {
+    return(accel_repetitive_input(x, is_fy))
+  }
+  fy_pattern <- "^([12][0-9]{3})[-\\s]?([0-9]{2})$"
   out <- logical(length(x))
-  potential_fys <- grepl("^([12][0-9]{3})[-\\s]?[0-9]{2}$", x, perl = TRUE)
+  potential_fys <- grepl(fy_pattern, x, perl = TRUE)
   out[potential_fys] <-
-    {as.integer(sub("^([12][0-9]{3})[-\\s]?[0-9]{2}$", "\\1", x[potential_fys], perl = TRUE)) + 1L} %% 100L == as.integer(sub("^[12][0-9]{3}[-\\s]?([0-9]{2})$", "\\1", x[potential_fys], perl = TRUE))
+    {{as.integer(substr(x[potential_fys], 0L, 4L)) + 1L} %% 100L} ==
+    as.integer(sub(fy_pattern, "\\2", x[potential_fys], perl = TRUE))
   out
 }
 

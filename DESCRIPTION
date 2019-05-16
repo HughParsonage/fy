@@ -21,9 +21,9 @@ Depends: R (>= 3.1.0)
 Imports: 
     fastmatch,
     data.table,
-    hutils,
-    zoo
+    hutils
 Suggests: 
     testthat,
     withr,
-    rlang
+    rlang,
+    zoo

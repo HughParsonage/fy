@@ -30,7 +30,7 @@
 #' }
 #'
 #'
-#'
+#' @export validate_fys_permitted
 
 
 
