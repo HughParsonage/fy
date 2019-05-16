@@ -7,10 +7,10 @@ Authors@R:
            role = c("aut", "cre"),
            email = "hugh.parsonage@gmail.com")
 Description: In Australia, a financial year (or fiscal year) is the period from 1 July to 30 June
-     of the following calendar year. As such, many transactional databases need to represent and 
+     of the following calendar year. As such, many databases need to represent and 
      validate financial years efficiently. While the use of integer years with a convention that  
      they represent the year ending is common, it may lead to ambiguity with calendar years.
-     On the other hand, string representations may be too inefficient and does not easily admit
+     On the other hand, string representations may be too inefficient and do not easily admit
      arithmetic operations. This package tries to make validation of financial years quicker while
      retaining clarity.
 License: GPL-2

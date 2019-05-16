@@ -57,4 +57,20 @@ max.fy <- function(...) {
   range.fy(...)[2]
 }
 
+# nocov start
+
+#' @export
+print.fy <- function(x, ...) {
+  if (length(x) < 10) {
+    cat("fy (", length(x), "): ", paste0(x, collapse = "  "), sep = "")
+  } else {
+    cat("fy (", prettyNum(length(x), big.mark = " "), "): ",
+        paste(head(x), collapse = "  "), "...\t",
+        if (!is.null(miny <- attr(x, "fy_min_yr"))) paste0("  min_yr = ", miny),
+        if (!is.null(maxy <- attr(x, "fy_max_yr"))) paste0("  max_yr = ", maxy),
+        sep = "")
+  }
+}
+# nocov end
+
 
