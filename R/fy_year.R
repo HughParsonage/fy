@@ -126,7 +126,7 @@ all_fy <- function(x, permitted = NULL) {
 range_fy2yr <- function(x) {
   # Put before any fmatch
   if (!is.atomic(x)) {
-    stop("`x` was class ", paste0(class(x), collapse = " "),
+    stop("`x` was class ", toString(class(x)),
          " but must be atomic.")
   }
   if (length(x) == 1L) {
@@ -165,10 +165,11 @@ yr2fy <- function(yr_ending,
                   assume1901_2100 = .getOption("fy.assume1901_2100",
                                                .getOption("grattan.assume1901_2100",
                                                           TRUE))) {
-  if (!is.atomic(yr_ending)) {
-    stop("`yr_ending` was class ", paste0(class(yr_ending), collapse = " "),
-         " but must be atomic.")
+  if (!is.atomic(yr_ending) || !is.numeric(yr_ending)) {
+    stop("`yr_ending` was class ", toString(class(yr_ending)),
+         " but must be an atomic, numeric vector.")
   }
+
   out <-
     if (assume1901_2100 ||
         AND(min(yr_ending) > 1900L,
@@ -185,8 +186,8 @@ yr2fy <- function(yr_ending,
 #' @rdname is_fy
 #' @export .yr2fy
 .yr2fy <- function(yr_ending) {
-  if (!is.atomic(yr_ending)) {
-    stop("`yr_ending` was class ", paste0(class(yr_ending), collapse = " "),
+  if (!is.atomic(yr_ending) || !is.numeric(yr_ending)) {
+    stop("`yr_ending` was class ", toString(class(yr_ending)),
          " but must be atomic.")
   }
   out <-
@@ -205,7 +206,7 @@ yr2fy <- function(yr_ending,
 fy2yr <- function(x, na_error = TRUE) {
   check_TF(na_error)
   if (!is.atomic(x)) {
-    stop("`x` was class ", paste0(class(x), collapse = " "),
+    stop("`x` was class ", toString(class(x)),
          " but must be atomic.")
   }
 

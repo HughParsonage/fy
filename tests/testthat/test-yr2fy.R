@@ -43,4 +43,7 @@ test_that("yr2fy if given a list", {
                regexp = "atomic")
 })
 
-
+test_that("yr2fy if not given expected input", {
+  expect_error(yr2fy("2014-15"), regexp = "`yr_ending`.*character")
+  expect_error(.yr2fy("2014-15"), regexp = "`yr_ending`.*character")
+})
