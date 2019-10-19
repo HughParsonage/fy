@@ -19,3 +19,8 @@ test_that("range verbose", {
   verbose = TRUE)
 })
 
+test_that("range_fy2yr if given a list", {
+  expect_error(range_fy2yr(list(x = 1, y = 2:3)),
+               regexp = "atomic")
+})
+

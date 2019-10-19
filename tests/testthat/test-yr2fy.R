@@ -37,3 +37,10 @@ test_that("accelerator", {
                                       THRESHOLD = 2L),
                as.Date(c("2015-04-04", "2017-04-04", "2016-04-04")))
 })
+
+test_that("yr2fy if given a list", {
+  expect_error(yr2fy(list(x = 1, y = 2:3)),
+               regexp = "atomic")
+})
+
+
