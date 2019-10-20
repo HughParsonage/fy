@@ -38,11 +38,14 @@ test_that("is_fy2", {
 })
 
 test_that("Correct logic when asserting fys", {
+  # Previous to October 2019, 'fy.yr contains non-FYs'
+  # This was dropped because it was wrong (`fy.yr` wasn't
+  # even the argument) and not as descriptive.
   expect_error(fy2date(c("foo", "2015-16")),
-               regexp = "fy.yr contains non-FYs",
+               regexp = 'contained "foo" which is not a valid financial year.',
                fixed = TRUE)
   expect_error(fy2yr(c("foo", "2015-16")),
-               regexp = "fy.yr contains non-FYs",
+               regexp = 'contained "foo" which is not a valid financial year.',
                fixed = TRUE)
 })
 

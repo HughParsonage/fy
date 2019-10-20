@@ -20,6 +20,11 @@
 #'  for earliest/latest permitted financial year when \code{min.yr}/\code{max.yr}
 #'  condition is violated.
 #'
+#' @param .retain_fmatches If \code{TRUE}, the function may retain an attribute
+#' \code{fy_fmatches}  an integer vector of the matches against the financial years
+#' \code{"1900-01"} to \code{"2099-00"}. A trade-off between memory and runtime from
+#' not recalculating matches.
+#'
 #' @return If \code{to_verify} contains valid financial years
 #' they are returned all in the form \code{2013-14}. If they were
 #' already in that form, they obtain the following attributes:
@@ -27,6 +32,7 @@
 #' \item{\code{fy_all_fy}}{\code{TRUE} if all the financial years are valid.}
 #' \item{\code{fy_min_yr}}{An integer, the earliest year ending in \code{to_verify}.}
 #' \item{\code{fy_max_yr}}{An integer, the latest year ending in \code{to_verify}.}
+#' \item{\code{fy_fmatches}}{An integer vector, the matches with the prebuilt financial years.}
 #' }
 #'
 #'
@@ -40,7 +46,8 @@ validate_fys_permitted <- function(to_verify,
                                    deparsed = deparse(substitute(to_verify)),
                                    allow.projection = TRUE,
                                    earliest_permitted_financial_year = "earliest permitted financial year",
-                                   latest_permitted_financial_year = "latest permitted financial year") {
+                                   latest_permitted_financial_year = "latest permitted financial year",
+                                   .retain_fmatches = FALSE) {
 
   if (!is.character(to_verify)) {
     stopn("`", deparsed, "` was type ", typeof(to_verify), ", ",
@@ -96,7 +103,7 @@ validate_fys_permitted <- function(to_verify,
       if (max.yr < attr(to_verify, "fy_max_yr")) {
         max.k <- max.yr - 1900L
         deparsed <- force(deparsed)
-        stopn(if (!allow.projection) "`allow.projection = FALSE`, yet ",
+        stopn(if (isFALSE(allow.projection)) "`allow.projection = FALSE`, yet ",
               "`", deparsed,
               if (length(to_verify) == 1L) " = " else "` contained ",
               '"', fys1901[attr(to_verify, "fy_max_yr") - 1900L], '"',
@@ -162,7 +169,7 @@ validate_fys_permitted <- function(to_verify,
       max_fmatches <- max(fmatches)
       if (max_fmatches > max.k) {
         first_bad <- which.max(fmatches)
-        stopn(if (!allow.projection) "`allow.projection = FALSE`, yet ",
+        stopn(if (isFALSE(allow.projection)) "`allow.projection = FALSE`, yet ",
               "`", deparsed,
               if (length(to_verify) == 1L) " = " else "` contained ",
               '"', to_verify[first_bad], '"',
@@ -172,7 +179,11 @@ validate_fys_permitted <- function(to_verify,
               latest_permitted_financial_year,
               ": ", '"', fys1901[max.k], '"', ".")
       }
-      attr(to_verify, "fy_max_yr") <-  max_fmatches + 1900L
+      attr(to_verify, "fy_max_yr") <- max_fmatches + 1900L
+    }
+
+    if (isTRUE(.retain_fmatches)) {
+      attr(to_verify, "fy_fmatches") <- fmatches
     }
 
     return(invisible(to_verify))
