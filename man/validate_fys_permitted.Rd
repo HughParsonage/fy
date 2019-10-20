@@ -53,3 +53,18 @@ computationally costly, relative to the core calculations.
 These internal functions provide mechanisms to check validity
 quickly, while still providing clear, accurate error messages.
 }
+\details{
+The preferred form is \code{"2012-13"}, and this function
+ returns all elements of \code{to_verify} in this form. That is, it does
+ not preserve the input form.
+
+ Other forms that are recognized (and converted) are:
+ \itemize{
+   \item{"201213"}
+   \item{"2012 13"}
+   \item{"2012\code{\\u2011}13"}
+   \item{"2012\code{\\u2012}13"}
+   \item{"2012\code{\\u2013}13"}
+   \item{"2012\code{\\u2014}13"}
+   }
+}

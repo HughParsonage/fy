@@ -25,6 +25,23 @@
 #' \code{"1900-01"} to \code{"2099-00"}. A trade-off between memory and runtime from
 #' not recalculating matches.
 #'
+#' @details The preferred form is \code{"2012-13"}, and this function
+#'  returns all elements of \code{to_verify} in this form. That is, it does
+#'  not preserve the input form.
+#'
+#'  Other forms that are recognized (and converted) are:
+#'  \itemize{
+#'    \item{"201213"}
+#'    \item{"2012 13"}
+#'    \item{"2012\code{\\u2011}13"}
+#'    \item{"2012\code{\\u2012}13"}
+#'    \item{"2012\code{\\u2013}13"}
+#'    \item{"2012\code{\\u2014}13"}
+#'    }
+#'
+#'
+#'
+#'
 #' @return If \code{to_verify} contains valid financial years
 #' they are returned all in the form \code{2013-14}. If they were
 #' already in that form, they obtain the following attributes:
