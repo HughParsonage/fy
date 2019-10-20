@@ -16,9 +16,9 @@ yr2fy(yr_ending, assume1901_2100 = .getOption("fy.assume1901_2100",
 
 .yr2fy(yr_ending)
 
-fy2yr(x, na_error = TRUE)
+fy2yr(x, validate = TRUE)
 
-fy2date(x, na_error = TRUE)
+fy2date(x, validate = TRUE)
 
 date2fy(date)
 
@@ -32,8 +32,8 @@ for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}
 
 \item{x, fy.yr}{A character vector suspected to be a financial year.}
 
-\item{na_error}{If an input expects a financial year and \code{na_error} is \code{TRUE}
-then the function exits with an error.}
+\item{validate}{If \code{TRUE}, the default, inputs that are expected to be financial years
+are first validated. Validation should be very fast, though some use-cases may require this be skipped.}
 
 \item{date}{A string or date for which the financial year is desired. Note that \code{yr2fy} does not check its argument is an integer.}
 
@@ -41,13 +41,15 @@ then the function exits with an error.}
 }
 \value{
 For \code{is_fy}, a logical, whether its argument is a financial year.
-The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, only.
+The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, as well as
+\code{2012<dash>13} for some dash symbols.
 For \code{fy.year}, \code{yr2fy}, and \code{date2fy}, the financial year.
 For the inverses, a numeric corresponding to the year.
 
-\code{fy.year} is a deprecated alias for \code{yr2fy}, the latter is slightly more efficient, as well as more declarative.
+\code{fy.year} was an alias for \code{yr2fy}, and is now defunct.
 
-\code{fy2yr} converts a financial year to the year ending: \code{fy2yr("2016-17")} returns 2017. \code{yr2fy} is the inverse: \code{yr2fy(fy2yr("2016-17")) == "2016-17"}.
+\code{fy2yr} converts a financial year to the year ending: \code{fy2yr("2016-17")} returns 2017.
+ \code{yr2fy} is the inverse: \code{yr2fy(fy2yr("2016-17")) == "2016-17"}.
 
 \code{fy2date} converts a financial year to the 30 June of the financial year ending.
 

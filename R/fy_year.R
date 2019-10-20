@@ -6,21 +6,23 @@
 #' @param x,fy.yr A character vector suspected to be a financial year.
 #' @param yq A character vector representing year quarters in \code{1066-Q2} format.
 #' @param date A string or date for which the financial year is desired. Note that \code{yr2fy} does not check its argument is an integer.
-#' @param na_error If an input expects a financial year and \code{na_error} is \code{TRUE}
-#'   then the function exits with an error.
+#' @param validate If \code{TRUE}, the default, inputs that are expected to be financial years
+#' are first validated. Validation should be very fast, though some use-cases may require this be skipped.
 #' @param assume1901_2100 For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
 #' for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.
 #' @details The following forms are permitted: \code{2012-13}, \code{201213}, \code{2012 13}, only.
 #' However, the \code{2012-13} form is preferred and will improve performance.
 #'
 #' @return For \code{is_fy}, a logical, whether its argument is a financial year.
-#' The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, only.
+#' The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, as well as
+#' \code{2012<dash>13} for some dash symbols.
 #' For \code{fy.year}, \code{yr2fy}, and \code{date2fy}, the financial year.
 #' For the inverses, a numeric corresponding to the year.
 #'
-#' \code{fy.year} is a deprecated alias for \code{yr2fy}, the latter is slightly more efficient, as well as more declarative.
+#' \code{fy.year} was an alias for \code{yr2fy}, and is now defunct.
 #'
-#' \code{fy2yr} converts a financial year to the year ending: \code{fy2yr("2016-17")} returns 2017. \code{yr2fy} is the inverse: \code{yr2fy(fy2yr("2016-17")) == "2016-17"}.
+#' \code{fy2yr} converts a financial year to the year ending: \code{fy2yr("2016-17")} returns 2017.
+#'  \code{yr2fy} is the inverse: \code{yr2fy(fy2yr("2016-17")) == "2016-17"}.
 #'
 #' \code{fy2date} converts a financial year to the 30 June of the financial year ending.
 #'
@@ -37,16 +39,38 @@
 NULL
 
 is_fy <- function(x) {
-  if (length(x) > 100e3L) {
-    return(accel_repetitive_input(x, is_fy))
+  if (length(x) > 1L) {
+    return(accel_repetitive_input(x, is_fy, THRESHOLD = 2L))
   }
-  fy_pattern <- "^([12][0-9]{3})[-\\s]?([0-9]{2})$"
-  out <- logical(length(x))
-  potential_fys <- grepl(fy_pattern, x, perl = TRUE)
-  out[potential_fys] <-
-    {{as.integer(substr(x[potential_fys], 0L, 4L)) + 1L} %% 100L} ==
-    as.integer(sub(fy_pattern, "\\2", x[potential_fys], perl = TRUE))
-  out
+  if (anyNA(x)) {
+    return(NA)
+  }
+  if (!is.character(x)) {
+    return(FALSE)
+  }
+  fy_pattern <- "^([12][0-9]{3})(.)?([0-9]{2})$"
+  if (!grepl(fy_pattern, x)) {
+    return(FALSE)
+  }
+  ncharx <- nchar(x)
+  lhs <- (as.integer(substr(x, 1L, 4L)) + 1L) %% 100L
+  if (ncharx == 7L) {
+    # Is the sep valid?
+    sep <- substr(x, 5L, 5L)
+    if (sep != "-" &&
+        sep != " " &&
+        sep != "\u2011" &&
+        sep != "\u2012" &&
+        sep != "\u2013" &&
+        sep != "\u2014") {
+      return(FALSE)
+    }
+    rhs <- as.integer(substr(x, 6L, 7L))
+  } else {
+    rhs <- as.integer(substr(x, 5L, 6L))
+  }
+
+  lhs == rhs
 }
 
 is_fy2 <- function(x) {
@@ -204,36 +228,32 @@ yr2fy <- function(yr_ending,
 
 #' @rdname is_fy
 #' @export fy2yr
-fy2yr <- function(x, na_error = TRUE) {
-  check_TF(na_error)
-  if (!is.atomic(x)) {
+fy2yr <- function(x, validate = TRUE) {
+
+  if (isTRUE(validate)) {
+    x <- validate_fys_permitted(x)
+  } else if (!is.atomic(x)) {
+    # Need to check this even if validate isn't
+    # TRUE, because `fmatch` will complain loudly.
     stop("`x` was class ", toString(class(x)),
          " but must be atomic.")
   }
 
-  x <- validate_fys_permitted(x)
-
-  out <- 1900L + fmatch(x, fys1901)
-  if (na_error && anyNA(out)) {
-    if (!all(is_fy(x))) {
-      stop("fy.yr contains non-FYs.\n",
-           "First non-FY position: ", which.max(is.na(out)), ".")
-    }
-    out <- fy2yr(yr2fy(as.integer(substr(x, 0L, 4L)) + 1L))
-  }
-  out
+  1900L + fmatch(x, fys1901)
 }
 
 
 #' @rdname is_fy
 #' @export fy2date
-fy2date <- function(x, na_error = TRUE) {
-  if (isTRUE(na_error)) {
+fy2date <- function(x, validate = TRUE) {
+  if (isTRUE(validate)) {
     x <- validate_fys_permitted(x)
   }
-
-  date <- paste0(as.integer(substr(x, 0L, 4L)) + 1L, "-06-30")
-  as.Date(date)
+  if (length(x) == 1L) {
+    date <- paste0(as.integer(substr(x, 0L, 4L)) + 1L, "-06-30")
+    return(as.Date(date))
+  }
+  accel_repetitive_input(x, fy2date, validate = FALSE)
 }
 
 

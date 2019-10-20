@@ -7,9 +7,9 @@
   }
 }
 
-accel_repetitive_input <- function(x, FUN, ..., THRESHOLD = 1000L) {
+accel_repetitive_input <- function(x, FUN, ..., THRESHOLD = 2L) {
   .FUN <- match.fun(FUN)
-  if (length(x) <= 1L || length(x) < THRESHOLD) {
+  if (length(x) < THRESHOLD) {
     .FUN(x)
   } else {
     DT <- setDT(list(x = x))
