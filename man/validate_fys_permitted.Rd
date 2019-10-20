@@ -8,7 +8,8 @@ validate_fys_permitted(to_verify, permitted_fys = NULL, min.yr = NULL,
   max.yr = NULL, deparsed = deparse(substitute(to_verify)),
   allow.projection = TRUE,
   earliest_permitted_financial_year = "earliest permitted financial year",
-  latest_permitted_financial_year = "latest permitted financial year")
+  latest_permitted_financial_year = "latest permitted financial year",
+  .retain_fmatches = FALSE)
 }
 \arguments{
 \item{to_verify}{A user-provided value, purporting to be
@@ -28,6 +29,11 @@ to be user-friendly.}
 \item{earliest_permitted_financial_year, latest_permitted_financial_year}{Text
 for earliest/latest permitted financial year when \code{min.yr}/\code{max.yr}
 condition is violated.}
+
+\item{.retain_fmatches}{If \code{TRUE}, the function may retain an attribute
+\code{fy_fmatches}  an integer vector of the matches against the financial years
+\code{"1900-01"} to \code{"2099-00"}. A trade-off between memory and runtime from
+not recalculating matches.}
 }
 \value{
 If \code{to_verify} contains valid financial years
@@ -37,6 +43,7 @@ already in that form, they obtain the following attributes:
 \item{\code{fy_all_fy}}{\code{TRUE} if all the financial years are valid.}
 \item{\code{fy_min_yr}}{An integer, the earliest year ending in \code{to_verify}.}
 \item{\code{fy_max_yr}}{An integer, the latest year ending in \code{to_verify}.}
+\item{\code{fy_fmatches}}{An integer vector, the matches with the prebuilt financial years.}
 }
 }
 \description{

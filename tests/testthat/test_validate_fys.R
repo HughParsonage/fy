@@ -78,7 +78,13 @@ test_that("Validation memoization", {
 
 })
 
-test_that("Validation on endashed fys", {
+test_that("Validation on UTF-8 endashed fys", {
+  x <- c("2014-15", "2015-16", paste0("2014", intToUtf8(8210L), "15"))
+  y <- validate_fys_permitted(x)
+  expect_true(inherits(y, "fy"))
+})
+
+test_that("Validation on ATO endashed fys", {
   # Just cells C3 and C4 in Indiviudals_table1_2015-16.xlsx from
   # the ATO's taxstats collection, should be 1978-79
   skip_if_not(file.exists(taxed.rds <- system.file("extdata/taxstats-tbl1-C3C4.rds", package = "fy")))
@@ -90,8 +96,14 @@ test_that("Validation on endashed fys", {
   expect_equal(fy2yr(v197879), 1979L)
   expect_equal(fy2date(x197879), as.Date("1979-06-30"))
   expect_equal(fy2date(v197879), as.Date("1979-06-30"))
-
 })
+
+test_that("Validation fmatches attribute", {
+  i <- validate_fys_permitted(c("2014-15", "2017-18"), .retain_fmatches = TRUE)
+  expect_identical(attr(i, "fy_fmatches"), c(115L, 118L))
+})
+
+
 
 
 

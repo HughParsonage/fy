@@ -11,7 +11,10 @@ test_that(".yr2fy", {
 
 test_that("fy2yr works", {
   expect_error(fy2yr(c("2014-15", "2015-15")),
-               regexp = "contains non-FYs",
+               regexp = "not a valid financial year",
+               fixed = TRUE)
+  expect_error(fy2yr("2015-15"),
+               regexp = "not a valid financial year",
                fixed = TRUE)
   expect_identical(fy2yr("2014-15"), 2015L)
   expect_equal(fy2yr(c("201415", "2015 16", "2015-16")),
