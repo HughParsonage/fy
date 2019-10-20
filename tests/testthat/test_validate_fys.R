@@ -78,6 +78,23 @@ test_that("Validation memoization", {
 
 })
 
+test_that("Validation on endashed fys", {
+  # Just cells C3 and C4 in Indiviudals_table1_2015-16.xlsx from
+  # the ATO's taxstats collection, should be 1978-79
+  skip_if_not(file.exists(taxed.rds <- system.file("extdata/taxstats-tbl1-C3C4.rds", package = "fy")))
+  taxstats_dash <- readRDS(taxed.rds)
+  x197879 <- names(taxstats_dash)[1]
+  v197879 <- validate_fys_permitted(x197879)
+  expect_true(inherits(v197879, "fy"))
+  expect_equal(fy2yr(x197879), 1979L)
+  expect_equal(fy2yr(v197879), 1979L)
+  expect_equal(fy2date(x197879), as.Date("1979-06-30"))
+  expect_equal(fy2date(v197879), as.Date("1979-06-30"))
+
+})
+
+
+
 
 
 

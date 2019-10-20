@@ -112,64 +112,77 @@ validate_fys_permitted <- function(to_verify,
   }
 
 
-  fy.year <- to_verify
+
   if (is.null(permitted_fys)) {
-    if (anyNA(fmatches <- fmatch(to_verify, fys1901))) {
-      if (all(are_fy <- is_fy(to_verify))) {
-        nchar_to_verify <- nchar(to_verify)
-        out <- sprintf("%s-%s",
-                       substr(to_verify, 1L, 4L),
-                       substr(to_verify, nchar_to_verify - 1L, nchar_to_verify))
-        return(out)
+    # Use the anyNA virtue of hutils::coalesce
+    if (anyNA3i(fmatches <- fmatch(to_verify, fys1901))) {
+      # Not standard financial year like '2014-15'.
+      # Is it just a nonstandard but valid financial year
+      # or is it not a financial year at all?
+      fmatches <- coalesce3i(fmatches,
+                             fmatch(to_verify, fys1901B),
+                             fmatch(to_verify, fys1901C),
+                             fmatch(to_verify, fys1901_2011),
+                             fmatch(to_verify, fys1901_2012),
+                             fmatch(to_verify, fys1901_2013),
+                             fmatch(to_verify, fys1901_2014))
+      if (anyNA3i(fmatches)) {
+        first_bad <- which.max(is.na(fmatches))
+        stopn("`", deparsed,
+              if (length(to_verify) == 1L) " = " else "` contained ",
+              '"', to_verify[first_bad], '"',
+              if (length(to_verify) == 1L) "` was " else " which is ",
+              "not a valid financial year.")
       }
-      first_bad <- which.min(are_fy)
-      stopn("`", deparsed,
-            if (length(to_verify) == 1L) " = " else "` contained ",
-            '"', to_verify[first_bad], '"',
-            if (length(to_verify) == 1L) "` was " else " which is ",
-            "not a valid financial year.")
-    } else {
-      attr(to_verify, "fy_all_fy") <- TRUE
-      if (!is.null(min.yr)) {
-        min.k <- min.yr - 1900L
-        min_fmatches <- min(fmatches)
-        if (min_fmatches < min.k) {
-          first_bad <- which.min(fmatches)
-          stopn("`", deparsed,
-                if (length(to_verify) == 1L) " = " else "` contained ",
-                '"', to_verify[first_bad], '"',
-                if (length(to_verify) == 1L) "`",
-                " which ",
-                "is earlier than the ",
-                earliest_permitted_financial_year,
-                ": ", '"', fys1901[min.k], '"', ".")
-        }
-        attr(to_verify, "fy_min_yr") <- min_fmatches + 1900L
-      }
-      if (!is.null(max.yr)) {
-        max.k <- max.yr - 1900L
-        max_fmatches <- max(fmatches)
-        if (max_fmatches > max.k) {
-          first_bad <- which.max(fmatches)
-          stopn(if (!allow.projection) "`allow.projection = FALSE`, yet ",
-                "`", deparsed,
-                if (length(to_verify) == 1L) " = " else "` contained ",
-                '"', to_verify[first_bad], '"',
-                if (length(to_verify) == 1L) "`",
-                " which ",
-                "is later than the ",
-                latest_permitted_financial_year,
-                ": ", '"', fys1901[max.k], '"', ".")
-        }
-        attr(to_verify, "fy_max_yr") <-  max_fmatches + 1900L
-      }
-      return(invisible(to_verify))
+
+      # Standardize
+      to_verify <- fys1901[fmatches]
     }
+
+    class(to_verify) <- "fy"
+    attr(to_verify, "fy_all_fy") <- TRUE
+    if (!is.null(min.yr)) {
+      min.k <- min.yr - 1900L
+      min_fmatches <- min(fmatches)
+      if (min_fmatches < min.k) {
+        first_bad <- which.min(fmatches)
+        stopn("`", deparsed,
+              if (length(to_verify) == 1L) " = " else "` contained ",
+              '"', to_verify[first_bad], '"',
+              if (length(to_verify) == 1L) "`",
+              " which ",
+              "is earlier than the ",
+              earliest_permitted_financial_year,
+              ": ", '"', fys1901[min.k], '"', ".")
+      }
+      attr(to_verify, "fy_min_yr") <- min_fmatches + 1900L
+    }
+    if (!is.null(max.yr)) {
+      max.k <- max.yr - 1900L
+      max_fmatches <- max(fmatches)
+      if (max_fmatches > max.k) {
+        first_bad <- which.max(fmatches)
+        stopn(if (!allow.projection) "`allow.projection = FALSE`, yet ",
+              "`", deparsed,
+              if (length(to_verify) == 1L) " = " else "` contained ",
+              '"', to_verify[first_bad], '"',
+              if (length(to_verify) == 1L) "`",
+              " which ",
+              "is later than the ",
+              latest_permitted_financial_year,
+              ": ", '"', fys1901[max.k], '"', ".")
+      }
+      attr(to_verify, "fy_max_yr") <-  max_fmatches + 1900L
+    }
+
+    return(invisible(to_verify))
+
   } else {
     permitted_fys <- validate_fys_permitted(permitted_fys)
   }
 
 
+  fy.year <- to_verify
   if (!all(fy.year %chin% permitted_fys)) {
     if (any(!is_fy(fy.year))) {
       i <- which(!is_fy(fy.year))
@@ -215,6 +228,43 @@ validate_fys_permitted <- function(to_verify,
   class(to_verify) <- "fy"
   return(to_verify)
 }
+
+# Recursive flavour
+# coalesce3 <- function(x, y, ...) {
+#   if (missing(y)) {
+#     return(x)
+#   }
+#   o <- hutils::coalesce(x, y)
+#   if (missing(..1)) {
+#     return(o)
+#   }
+#   coalesce3(o, ...)
+# }
+
+# integers guaranteed
+coalesce3i <- function(x, y, ...) {
+  if (!anyNA3i(x) || missing(y)) {
+    setattr(x, name = "x_anyNA_3i", value = FALSE)
+    return(x)
+  }
+
+  x[is.na(x)] <- y[is.na(x)]
+  if (missing(..1)) {
+    setattr(x, name = "x_anyNA_3i", value = TRUE)
+    return(x)
+  }
+  coalesce3i(x, ...)
+}
+
+anyNA3i <- function(x) {
+  o <- attr(x, "x_anyNA_3i")
+  if (is.null(o)) {
+    return(anyNA(x))
+  }
+  o
+}
+
+
 
 
 
