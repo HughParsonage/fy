@@ -33,6 +33,8 @@ test_that("min or max years", {
   expect_equal(validate_fys_permitted("1984-85", min.yr = 1982L, max.yr = 1989L), "1984-85", check.attributes = FALSE)
   expect_error(validate_fys_permitted(c("1980-81", "1980-80"), min.yr = 1980L),
                regexp = 'contained "1980-80" which is not a valid financial year.')
+  expect_error(validate_fys_permitted(c("2014-15", "201516", "2015-16"), min.yr = 2016L, deparsed = "x"),
+               regexp = "earliest permitted financial year")
 })
 
 test_that("validation of other types", {

@@ -129,6 +129,7 @@ range_fy2yr <- function(x) {
     stop("`x` was class ", toString(class(x)),
          " but must be atomic.")
   }
+
   if (length(x) == 1L) {
     y <- fmatch(x, fys1901) + 1900L
     return(rep(y, times = 2L))
@@ -210,6 +211,8 @@ fy2yr <- function(x, na_error = TRUE) {
          " but must be atomic.")
   }
 
+  x <- validate_fys_permitted(x)
+
   out <- 1900L + fmatch(x, fys1901)
   if (na_error && anyNA(out)) {
     if (!all(is_fy(x))) {
@@ -225,9 +228,10 @@ fy2yr <- function(x, na_error = TRUE) {
 #' @rdname is_fy
 #' @export fy2date
 fy2date <- function(x, na_error = TRUE) {
-  if (na_error && !all(is_fy(x))) {
-    stop("fy.yr contains non-FYs")
+  if (isTRUE(na_error)) {
+    x <- validate_fys_permitted(x)
   }
+
   date <- paste0(as.integer(substr(x, 0L, 4L)) + 1L, "-06-30")
   as.Date(date)
 }
