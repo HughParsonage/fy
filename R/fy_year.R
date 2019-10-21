@@ -3,15 +3,16 @@
 #' @name is_fy
 #' @aliases fy.year yr2fy fy2yr fy2date date2fy
 #' @param yr_ending An integer representing a year.
-#' @param x,fy.yr A character vector suspected to be a financial year.
+#' @param x A character vector suspected to be a financial year.
 #' @param yq A character vector representing year quarters in \code{1066-Q2} format.
 #' @param date A string or date for which the financial year is desired. Note that \code{yr2fy} does not check its argument is an integer.
 #' @param validate If \code{TRUE}, the default, inputs that are expected to be financial years
 #' are first validated. Validation should be very fast, though some use-cases may require this be skipped.
 #' @param assume1901_2100 For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
 #' for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.
-#' @details The following forms are permitted: \code{2012-13}, \code{201213}, \code{2012 13}, only.
-#' However, the \code{2012-13} form is preferred and will improve performance.
+#'
+#'
+#' @details See \code{\link{valid-fys}} for allowed forms of \code{x}.
 #'
 #' @return For \code{is_fy}, a logical, whether its argument is a financial year.
 #' The following forms are allowed: \code{2012-13}, \code{201213}, \code{2012 13}, as well as

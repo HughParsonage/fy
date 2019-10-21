@@ -30,7 +30,7 @@ qtr2fy(yq)
 \item{assume1901_2100}{For \code{yr2fy}, assume that \code{yr_ending} is between 1901 and 2100,
 for performance. By default, set to \code{getOption("fy.assume1901_2100", TRUE)}.}
 
-\item{x, fy.yr}{A character vector suspected to be a financial year.}
+\item{x}{A character vector suspected to be a financial year.}
 
 \item{validate}{If \code{TRUE}, the default, inputs that are expected to be financial years
 are first validated. Validation should be very fast, though some use-cases may require this be skipped.}
@@ -59,8 +59,7 @@ For the inverses, a numeric corresponding to the year.
 Convenience functions for dealing with financial years
 }
 \details{
-The following forms are permitted: \code{2012-13}, \code{201213}, \code{2012 13}, only.
-However, the \code{2012-13} form is preferred and will improve performance.
+See \code{\link{valid-fys}} for allowed forms of \code{x}.
 }
 \examples{
 is_fy("2012-13")
