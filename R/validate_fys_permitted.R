@@ -6,6 +6,8 @@
 #' These internal functions provide mechanisms to check validity
 #' quickly, while still providing clear, accurate error messages.
 #'
+#' @aliases valid-fys
+#'
 #' @param to_verify A user-provided value, purporting to be
 #' character vector of financial years.
 #' @param permitted_fys A character vector of valid financial years.
@@ -50,6 +52,19 @@
 #' \item{\code{fy_min_yr}}{An integer, the earliest year ending in \code{to_verify}.}
 #' \item{\code{fy_max_yr}}{An integer, the latest year ending in \code{to_verify}.}
 #' \item{\code{fy_fmatches}}{An integer vector, the matches with the prebuilt financial years.}
+#' }
+#'
+#' @section Benchmarks
+#' \preformatted{
+#'  x <- rep_len(yr2fy(2004L), 1e9)
+#'  bench::system_time(validate_fys_permitted(x))
+#'  #> process    real
+#   #>  3.578s  3.576s
+
+#'  x <- rep_len(yr2fy(1980:2016), 1e9)
+#'  bench::system_time(validate_fys_permitted(x))
+#'  #> process    real
+#   #>  3.766s  3.753s
 #' }
 #'
 #'

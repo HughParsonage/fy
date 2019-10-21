@@ -2,6 +2,7 @@
 % Please edit documentation in R/validate_fys_permitted.R
 \name{validate_fys_permitted}
 \alias{validate_fys_permitted}
+\alias{valid-fys}
 \title{Verifying validity of financial years}
 \usage{
 validate_fys_permitted(to_verify, permitted_fys = NULL, min.yr = NULL,
