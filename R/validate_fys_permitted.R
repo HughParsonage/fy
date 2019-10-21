@@ -257,40 +257,7 @@ validate_fys_permitted <- function(to_verify,
   return(to_verify)
 }
 
-# Recursive flavour
-# coalesce3 <- function(x, y, ...) {
-#   if (missing(y)) {
-#     return(x)
-#   }
-#   o <- hutils::coalesce(x, y)
-#   if (missing(..1)) {
-#     return(o)
-#   }
-#   coalesce3(o, ...)
-# }
 
-# integers guaranteed
-coalesce3i <- function(x, y, ...) {
-  if (!anyNA3i(x) || missing(y)) {
-    setattr(x, name = "x_anyNA_3i", value = FALSE)
-    return(x)
-  }
-
-  x[is.na(x)] <- y[is.na(x)]
-  if (missing(..1)) {
-    setattr(x, name = "x_anyNA_3i", value = TRUE)
-    return(x)
-  }
-  coalesce3i(x, ...)
-}
-
-anyNA3i <- function(x) {
-  o <- attr(x, "x_anyNA_3i")
-  if (is.null(o)) {
-    return(anyNA(x))
-  }
-  o
-}
 
 
 

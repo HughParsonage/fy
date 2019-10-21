@@ -103,6 +103,34 @@ test_that("Validation fmatches attribute", {
   expect_identical(attr(i, "fy_fmatches"), c(115L, 118L))
 })
 
+test_that("validation on already validated ranges", {
+  x <- yr2fy(1995:1999)
+  x <- validate_fys_permitted(x, min.yr = 1995L, max.yr = 1999L)
+  expect_equal(fy2yr(min(x)), 1995L)
+  expect_true(inherits(validate_fys_permitted(x, min.yr = 1994L, max.yr = 2000L), "fy"))
+  expect_error(validate_fys_permitted(x, min.yr = 1996L),
+               regexp = 'earlier than the earliest permitted financial year: "1995-96"',
+               fixed = TRUE)
+  expect_error(validate_fys_permitted(x, max.yr = 1996L),
+               regexp = 'later than the latest permitted financial year: "1995-96"',
+               fixed = TRUE)
+  attr(x, "fy_min_yr") <- NULL
+  expect_error(validate_fys_permitted(x, min.yr = 1996L),
+               regexp = 'earlier than the earliest permitted financial year: "1995-96"',
+               fixed = TRUE)
+  expect_error(validate_fys_permitted(x, max.yr = 1996L),
+               regexp = 'later than the latest permitted financial year: "1995-96"',
+               fixed = TRUE)
+  attr(x, "fy_max_yr") <- NULL
+  expect_error(validate_fys_permitted(x, min.yr = 1996L),
+               regexp = 'earlier than the earliest permitted financial year: "1995-96"',
+               fixed = TRUE)
+  expect_error(validate_fys_permitted(x, max.yr = 1996L),
+               regexp = 'later than the latest permitted financial year: "1995-96"',
+               fixed = TRUE)
+})
+
+
 
 
 
