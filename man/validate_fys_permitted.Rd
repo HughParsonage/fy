@@ -69,3 +69,19 @@ The preferred form is \code{"2012-13"}, and this function
    \item{"2012\code{\\u2014}13"}
    }
 }
+\section{Benchmarks}{
+
+
+\preformatted{
+ x <- rep_len(yr2fy(2004L), 1e9)
+ bench::system_time(validate_fys_permitted(x))
+ #> process    real
+ #>  3.578s  3.576s
+ x <- rep_len(yr2fy(1980:2016), 1e9)
+
+ bench::system_time(validate_fys_permitted(x))
+ #> process    real
+ #>  3.766s  3.753s
+}
+}
+
