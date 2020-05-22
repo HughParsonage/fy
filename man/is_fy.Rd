@@ -11,8 +11,11 @@
 \alias{qtr2fy}
 \title{Convenience functions for dealing with financial years}
 \usage{
-yr2fy(yr_ending, assume1901_2100 = .getOption("fy.assume1901_2100",
-  .getOption("grattan.assume1901_2100", TRUE)))
+yr2fy(
+  yr_ending,
+  assume1901_2100 = .getOption("fy.assume1901_2100",
+    .getOption("grattan.assume1901_2100", TRUE))
+)
 
 .yr2fy(yr_ending)
 

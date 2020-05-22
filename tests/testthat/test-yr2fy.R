@@ -28,6 +28,13 @@ test_that("date2fy", {
                c("2014-15", "2014-15"))
 })
 
+test_that("fy2date", {
+  expect_equal(fy2date("1999-00"), as.Date("2000-06-30"))
+  expect_equal(fy2date("1999-2000"), as.Date("2000-06-30"))
+  expect_equal(fy2date("2014-15"), as.Date("2015-06-30"))
+  expect_equal(fy2date("2014-2015"), as.Date("2015-06-30"))
+})
+
 test_that("accelerator", {
   expect_equal(accel_repetitive_input(c("2015-04-04", "2017-04-04", "2016-04-04"),
                                       as.Date,

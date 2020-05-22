@@ -39,6 +39,7 @@
 #'    \item{"2012\code{\\u2012}13"}
 #'    \item{"2012\code{\\u2013}13"}
 #'    \item{"2012\code{\\u2014}13"}
+#'    \item{"2012-2013"}
 #'    }
 #'
 #'
@@ -165,7 +166,14 @@ validate_fys_permitted <- function(to_verify,
                              fmatch(to_verify, fys1901_2011),
                              fmatch(to_verify, fys1901_2012),
                              fmatch(to_verify, fys1901_2013),
-                             fmatch(to_verify, fys1901_2014))
+                             fmatch(to_verify, fys1901_2014),
+                             fmatch(to_verify, fys1901_9),
+                             fmatch(to_verify, fys1901B_9),
+                             fmatch(to_verify, fys1901C_9),
+                             fmatch(to_verify, fys1901_2011_9),
+                             fmatch(to_verify, fys1901_2012_9),
+                             fmatch(to_verify, fys1901_2013_9),
+                             fmatch(to_verify, fys1901_2014_9))
       if (anyNA3i(fmatches)) {
         first_bad <- which.max(is.na(fmatches))
         stopn("`", deparsed,

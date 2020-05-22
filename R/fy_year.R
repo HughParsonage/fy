@@ -49,14 +49,34 @@ is_fy <- function(x) {
   if (!is.character(x)) {
     return(FALSE)
   }
-  fy_pattern <- "^([12][0-9]{3})(.)?([0-9]{2})$"
-  if (!grepl(fy_pattern, x)) {
+  # strsplit(x, split = "(?<=[0-9]{4})(?=[0-9])|(?<=[0-9]{4})(?=[[:punct:]])|(?<=[[:punct:]])(?=[0-9])", perl = T)
+  #
+  # strsplit(split)
+
+  fy_split <- strsplit(x, "((?<=([0-9]{4}))[^0-9]?)", perl = TRUE)
+  yr0 <- fy_split[[1]][1]
+  yr1 <- fy_split[[1]][2]
+
+  yearlike <- grepl("^[0-9][0-9]+$", yr0) && grepl("^[0-9][0-9](?:[0-9]{2})?$", yr1)
+  if (!yearlike) {
     return(FALSE)
   }
+
+  if (nchar(yr1) == 2L) {
+    yr1_from_lhs <- (as.integer(yr0) + 1L) %% 100L
+    yr1_from_rhs <- as.integer(yr1) %% 100L
+  }  else {
+    # 2013, 14
+    yr1_from_lhs <- as.integer(yr0) + 1L
+    yr1_from_rhs <- as.integer(yr1)
+  }
+
+  if (yr1_from_lhs != yr1_from_rhs) {
+    return(FALSE)
+  }
+
   ncharx <- nchar(x)
-  lhs <- (as.integer(substr(x, 1L, 4L)) + 1L) %% 100L
-  if (ncharx == 7L) {
-    # Is the sep valid?
+  if (ncharx == 7L || ncharx == 9L) {
     sep <- substr(x, 5L, 5L)
     if (sep != "-" &&
         sep != " " &&
@@ -66,12 +86,9 @@ is_fy <- function(x) {
         sep != "\u2014") {
       return(FALSE)
     }
-    rhs <- as.integer(substr(x, 6L, 7L))
-  } else {
-    rhs <- as.integer(substr(x, 5L, 6L))
   }
 
-  lhs == rhs
+  return(TRUE)
 }
 
 is_fy2 <- function(x) {

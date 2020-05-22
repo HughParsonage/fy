@@ -1,3 +1,10 @@
+# fy 0.3.0
+
+## Enhancements
+
+* Allow strings like `2013-2014` as a valid financial years. Thanks to @MattCowgill for the suggestion.
+
+
 # fy 0.2.0
 
 * Added a `NEWS.md` file to track changes to the package.

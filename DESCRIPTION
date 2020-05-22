@@ -1,6 +1,6 @@
 Package: fy
 Title: Utilities for Financial Years
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person(given = "Hugh",
            family = "Parsonage",
@@ -16,7 +16,7 @@ Description: In Australia, a financial year (or fiscal year) is the period from 
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Depends: R (>= 3.1.0)
 Imports: 
     fastmatch,

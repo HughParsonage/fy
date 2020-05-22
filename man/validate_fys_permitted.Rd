@@ -5,12 +5,17 @@
 \alias{valid-fys}
 \title{Verifying validity of financial years}
 \usage{
-validate_fys_permitted(to_verify, permitted_fys = NULL, min.yr = NULL,
-  max.yr = NULL, deparsed = deparse(substitute(to_verify)),
+validate_fys_permitted(
+  to_verify,
+  permitted_fys = NULL,
+  min.yr = NULL,
+  max.yr = NULL,
+  deparsed = deparse(substitute(to_verify)),
   allow.projection = TRUE,
   earliest_permitted_financial_year = "earliest permitted financial year",
   latest_permitted_financial_year = "latest permitted financial year",
-  .retain_fmatches = FALSE)
+  .retain_fmatches = FALSE
+)
 }
 \arguments{
 \item{to_verify}{A user-provided value, purporting to be
@@ -67,6 +72,7 @@ The preferred form is \code{"2012-13"}, and this function
    \item{"2012\code{\\u2012}13"}
    \item{"2012\code{\\u2013}13"}
    \item{"2012\code{\\u2014}13"}
+   \item{"2012-2013"}
    }
 }
 \section{Benchmarks}{
