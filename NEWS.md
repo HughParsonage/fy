@@ -1,3 +1,8 @@
+# fy 0.4.0
+
+## Internal
+  - Fix upcoming namespace clash with data.table for `%notin%`
+
 # fy 0.3.0
 
 ## Enhancements

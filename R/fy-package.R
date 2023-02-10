@@ -1,6 +1,6 @@
 #' Utilities for financial years
 #' @description A financial year starts halfway through a calendar year.
-#' @import data.table
+#' @rawNamespace import(data.table, except = "%notin%")
 #' @importFrom fastmatch fmatch
 #' @importFrom fastmatch %fin%
 #' @importFrom hutils AND
