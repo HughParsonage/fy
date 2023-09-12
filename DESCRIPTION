@@ -1,6 +1,6 @@
 Package: fy
 Title: Utilities for Financial Years
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: 
     person(given = "Hugh",
            family = "Parsonage",
